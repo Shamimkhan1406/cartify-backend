@@ -3,6 +3,7 @@
 // import the express module
 const express = require("express");
 const mongoose = require("mongoose");
+const authRouter = require("./routes/auth");
 require ("dotenv").config();
 
 // define the port number the server will listen on
@@ -15,6 +16,8 @@ const app = express();
 
 const DB = process.env.DB_key;
 // middleware to register the route or two mount routes
+app.use(express.json());
+app.use(authRouter);
 
 
 mongoose.connect(DB).then(()=>{

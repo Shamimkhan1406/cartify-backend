@@ -26,4 +26,6 @@ authRouter.post("/api/signup", async (req,res)=>{
             error: e.message,
         });
     }
-})
+});
+
+module.exports = authRouter;
