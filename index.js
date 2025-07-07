@@ -2,7 +2,6 @@
 
 // import the express module
 const express = require("express");
-const helloRoute = require("./routes/hello");
 const mongoose = require("mongoose");
 require ("dotenv").config();
 
@@ -16,7 +15,7 @@ const app = express();
 
 const DB = process.env.DB_key;
 // middleware to register the route or two mount routes
-app.use(helloRoute);
+
 
 mongoose.connect(DB).then(()=>{
     console.log("connected to database");
