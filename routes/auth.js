@@ -8,11 +8,11 @@ const authRouter = express.Router();
 // signup api point
 authRouter.post("/api/signup", async (req,res)=>{
     try {
-        const {fullName,email,password} = req.body;
+        const {email,fullName,password} = req.body;
         const existingEmail = await User.findOne({email});
         if(existingEmail){
             return res.status(400).json({
-                message:"Email already exists"
+                msg:"Email already exists"
             });
         }
         else{
@@ -22,8 +22,8 @@ authRouter.post("/api/signup", async (req,res)=>{
             const hashPassword = await bcrypt.hash(password,salt);
             // create a new user
             let user = new User({
-                fullName,
                 email,
+                fullName,
                 password:hashPassword
             });
             user = await user.save();
@@ -42,7 +42,7 @@ authRouter.post("/api/signin", async (req,res)=>{
         const findUser = await User.findOne({email});
         if (!findUser){
             return res.status(400).json({
-                message:"User does not exist"
+                msg:"User does not exist"
             });
         }
         else{
