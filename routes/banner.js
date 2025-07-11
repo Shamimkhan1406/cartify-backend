@@ -4,8 +4,8 @@ const bannerRouter = express.Router();
 
 bannerRouter.post('/api/banner', async (req, res)=>{
     try {
-        const {Image} = req.body;
-        const banner = new Banner({Image});
+        const {image} = req.body;
+        const banner = new Banner({image});
         await banner.save();
         res.status(201).send(banner);
     } catch (e) {

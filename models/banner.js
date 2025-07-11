@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const bannerSchema = mongoose.Schema({
-    Image: {
+    image: {
         type: String,
         required: true,
 
