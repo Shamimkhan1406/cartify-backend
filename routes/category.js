@@ -4,7 +4,7 @@ const Category = require('../models/category');
 const categoryRouter = express.Router();
 
 // Create a new category
-categoryRouter.post('/api/category', async (req, res)=> {
+categoryRouter.post('/api/categories', async (req, res)=> {
     try {
         const {name, image, banner} = req.body;
         const category = new Category ({name, image, banner});

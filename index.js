@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const authRouter = require("./routes/auth");
 const bannerRouter = require("./routes/banner");
+const categoryRouter = require("./routes/category");
 // import the dotenv module to load environment variables
 require ("dotenv").config();
 
@@ -21,6 +22,7 @@ const DB = process.env.DB_key;
 app.use(express.json());
 app.use(authRouter);
 app.use(bannerRouter);
+app.use(categoryRouter);
 
 
 mongoose.connect(DB).then(()=>{
