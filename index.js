@@ -7,6 +7,7 @@ const authRouter = require("./routes/auth");
 const bannerRouter = require("./routes/banner");
 const categoryRouter = require("./routes/category");
 const subCategoryRouter = require("./routes/sub_category");
+const productRouter = require("./routes/product");
 // import the dotenv module to load environment variables
 require ("dotenv").config();
 
@@ -25,6 +26,7 @@ app.use(authRouter);
 app.use(bannerRouter);
 app.use(categoryRouter);
 app.use(subCategoryRouter);
+app.use(productRouter);
 
 
 mongoose.connect(DB).then(()=>{
