@@ -34,7 +34,7 @@ const productSchema = mongoose.Schema({
     ],
     populer: {
         type: Boolean,
-        default: true,
+        default: false,
     },
     recommend: {
         type: Boolean,

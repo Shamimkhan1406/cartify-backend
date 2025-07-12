@@ -16,4 +16,38 @@ productRouter.post('/api/add-product', async (req, res)=> {
     }
 });
 
+productRouter.get('/api/populer-products', async (req, res)=> {
+    try {
+        const product = await Product.find({populer: true});
+        if(!product || product.length === 0){
+            return res.status(404).json({
+                error: "No popular products found",
+            });
+        }else {
+            return res.status(200).send(product);
+        }
+    } catch (e) {
+        res.status(500).json({
+            error: e.message,
+        });
+    }
+});
+
+productRouter.get('/api/recommended-products', async (req, res)=> {
+    try {
+        const product = await Product.find({recommended: true});
+        if(!product || product.length === 0){
+            return res.status(404).json({
+                error: "No recommended products found",
+            });
+        }else {
+            return res.status(200).send(product);
+        }
+    } catch (e) {
+        res.status(500).json({
+            error: e.message,
+        });
+    }
+});
+
 module.exports = productRouter;
