@@ -1,6 +1,7 @@
 //console.log("Hello World");
 
 // import the express module
+const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
 const authRouter = require("./routes/auth");
@@ -23,6 +24,7 @@ const app = express();
 const DB = process.env.DB_key;
 // middleware to register the route or two mount routes
 app.use(express.json());
+app.use(cors());  // enable CORS for all routes and origins
 app.use(authRouter);
 app.use(bannerRouter);
 app.use(categoryRouter);
