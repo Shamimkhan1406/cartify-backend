@@ -1,6 +1,5 @@
 const express = require('express');
 const SubCategory = require('../models/sub_category');
-const subCategory = require('../models/sub_category');
 const subCategoryRouter = express.Router();
 
 subCategoryRouter.post('/api/subcategories',async (req, res)=> {
@@ -31,14 +30,14 @@ subCategoryRouter.get('/api/subcategories', async (req, res) =>{
 subCategoryRouter.get('/api/categories/:categoryName/subcategories', async (req, res)=> {
     try {
         const {categoryName} = req.params;
-        const subcategories = await subCategory.find({categoryName: categoryName});
+        const subcategories = await SubCategory.find({categoryName: categoryName});
         if (!subcategories || subcategories.length === 0){
             return res.status(404).json({
                 msg: "subcategory not found",
             });
         }
         else {
-            return res.status(202).json({subcategories});
+            return res.status(200).json({subcategories});
         }
     } catch (e) {
         res.status(500).json({

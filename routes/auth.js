@@ -59,7 +59,7 @@ authRouter.post("/api/signin", async (req,res)=>{
                 // sent the response
                 res.json({
                     token,
-                    ...userWithoutPassword
+                    user: userWithoutPassword
                 });
             }
         }
