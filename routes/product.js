@@ -49,11 +49,11 @@ productRouter.get('/api/recommended-products', async (req, res)=> {
         });
     }
 });
-// retrieve product by category
+// retrieve populer product by category
 productRouter.get('/api/products-by-category/:category', async (req, res)=>{
     try {
         const {category} = req.params;
-        const products = await Product.find({category});
+        const products = await Product.find({category, populer: true});
         if (!products || products.length === 0){
             return res.status(404).json({
                 msg: "No products found for this category",
