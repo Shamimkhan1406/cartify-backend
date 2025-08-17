@@ -11,6 +11,7 @@ const subCategoryRouter = require("./routes/sub_category");
 const productReviewRouter = require("./routes/product_review");
 const vendorRouter = require("./routes/vendor");
 const productRouter = require("./routes/product");
+const orderRouter = require("./routes/order");
 // import the dotenv module to load environment variables
 require ("dotenv").config();
 
@@ -33,6 +34,7 @@ app.use(subCategoryRouter);
 app.use(productReviewRouter);
 app.use(vendorRouter);
 app.use(productRouter);
+app.use(orderRouter);
 
 mongoose.connect(DB).then(()=>{
     console.log("connected to database");

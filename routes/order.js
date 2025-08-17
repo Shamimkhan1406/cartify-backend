@@ -6,7 +6,7 @@ const Order = require('../models/order');
 orderRouter.post('/api/orders', async (req, res) => {
     try {
         const { fullName, email, state, city, locality, productName, productPrice, quantity, category, image, buyerId, vendorId, } = req.body;
-        const createdAt = new Date.getmilliseconds();
+        const createdAt = Date.now(); // get the current timestamp
         // create a new order instance with the extracted data
         const order = new Order(
             { fullName, email, state, city, locality, productName, productPrice, quantity, category, image, buyerId, vendorId, createdAt }
@@ -22,3 +22,5 @@ orderRouter.post('/api/orders', async (req, res) => {
         });
     }
 });
+
+module.exports = orderRouter;
