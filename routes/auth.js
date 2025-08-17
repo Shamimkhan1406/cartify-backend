@@ -6,28 +6,28 @@ const jwt = require("jsonwebtoken");
 const authRouter = express.Router();
 
 // signup api point
-authRouter.post("/api/signup", async (req,res)=>{
+authRouter.post("/api/signup", async (req, res) => {
     try {
-        const {email,fullName,password} = req.body;
-        const existingEmail = await User.findOne({email});
-        if(existingEmail){
+        const { email, fullName, password } = req.body;
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) {
             return res.status(400).json({
-                msg:"Email already exists"
+                msg: "Email already exists"
             });
         }
-        else{
+        else {
             // generate a salt with a cost factor of 10
             const salt = await bcrypt.genSalt(10);
             // hash the password using the salt
-            const hashPassword = await bcrypt.hash(password,salt);
+            const hashPassword = await bcrypt.hash(password, salt);
             // create a new user
             let user = new User({
                 email,
                 fullName,
-                password:hashPassword
+                password: hashPassword
             });
             user = await user.save();
-            res.json({user});
+            res.json({ user });
         }
     } catch (e) {
         res.status(500).json({
@@ -36,26 +36,26 @@ authRouter.post("/api/signup", async (req,res)=>{
     }
 });
 // signin api point
-authRouter.post("/api/signin", async (req,res)=>{
+authRouter.post("/api/signin", async (req, res) => {
     try {
-        const {email,password} = req.body;
-        const findUser = await User.findOne({email});
-        if (!findUser){
+        const { email, password } = req.body;
+        const findUser = await User.findOne({ email });
+        if (!findUser) {
             return res.status(400).json({
-                msg:"User does not exist"
+                msg: "User does not exist"
             });
         }
-        else{
-            const isMatch = await bcrypt.compare(password,findUser.password);
-            if (!isMatch){
+        else {
+            const isMatch = await bcrypt.compare(password, findUser.password);
+            if (!isMatch) {
                 return res.status(400).json({
-                    msg:"password does not match"
+                    msg: "password does not match"
                 });
             }
-            else{
-                const token = jwt.sign({id:findUser._id},"passwordKey");
+            else {
+                const token = jwt.sign({ id: findUser._id }, "passwordKey");
                 // remove the password from the response
-                const {password, ...userWithoutPassword} = findUser._doc;
+                const { password, ...userWithoutPassword } = findUser._doc;
                 // sent the response
                 res.json({
                     token,
@@ -69,5 +69,36 @@ authRouter.post("/api/signin", async (req,res)=>{
         });
     }
 });
+
+// put route for updating user's state, city and locality
+authRouter.put("/api/users/:id", async (req, res) => {
+    try {
+        // extract the id parameter from the request url
+        const { id } = req.params;
+        // extract the state, city, and locality from the request body
+        const { state, city, locality } = req.body;
+        // find the user by id and update their state, city, and locality
+        // setting new option to true returns the updated document
+        // if the user is not found, it will return null
+        const updatedUser = await User.findByIdAndUpdate(
+            id, 
+            { state, city, locality }, 
+            { new: true }
+        );
+        // if the user is not found, return a 404 status code
+        if (!updatedUser) {
+            return res.status(404).json({
+                msg: "User not found"
+            });
+        }
+        // return the updated user
+        return res.status(200).json(updatedUser);
+    } catch (e) {
+        // handle any errors that occur during the process
+        res.status(500).json({
+            error: e.message,
+        });
+    }
+},);
 
 module.exports = authRouter;
