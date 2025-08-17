@@ -50,6 +50,14 @@ const productSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    processing: {
+        type: Boolean,
+        default: true,
+    },
+    delivered: {
+        type: Boolean,
+        default: false,
+    },
     createdAt: {
         type: Number,
         required: true,
