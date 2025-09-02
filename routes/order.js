@@ -92,5 +92,54 @@ orderRouter.get('/api/orders/vendors/:vendorId', async (req, res) => {
         });
     }
 });
+// patch method for updating the delivery status
+orderRouter.patch('/api/orders/:id/delivered', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedOrder = await Order.findByIdAndUpdate(
+            id,
+            { delivered: true },
+            { new: true }
+        );
+        if (!updatedOrder) {
+            return res.status(404).json({
+                msg: "Order not found",
+            });
+
+        }
+        else {
+            return res.status(200).json(updatedOrder);
+        }
+    } catch (e) {
+        res.status(500).json({
+            error: e.message,
+        });
+    }
+});
+// patch method for updating the processing status
+orderRouter.patch('/api/orders/:id/processing', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedOrder = await Order.findByIdAndUpdate(
+            id,
+            { processing: false },
+            { new: true }
+        );
+        if (!updatedOrder) {
+            return res.status(404).json({
+                msg: "Order not found",
+            });
+
+        }
+        else {
+            return res.status(200).json(updatedOrder);
+        }
+    } catch (e) {
+        res.status(500).json({
+            error: e.message,
+        });
+    }
+})
+
 
 module.exports = orderRouter;
