@@ -48,6 +48,16 @@ const productSchema = mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    // fields for rating
+    avgRating: {
+        type: Number,
+        default: 0,
+    },
+    totalRating: {
+        type: Number,
+        default: 0,
+    },
+    
 });
 
 const Product = mongoose.model('Product', productSchema);
