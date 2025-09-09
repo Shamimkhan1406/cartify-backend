@@ -9,12 +9,11 @@ productReviewRouter.post('/api/product-review', async (req, res) => {
         {
             const { buyerId, email, fullName, productId, rating, review } = req.body;
             const existingReview = await ProductReview.findOne({ buyerId, productId });
-            if (existingReview) {
-                return res.status(400).json({
-                    error: "You have already reviewed this product",
-
-                })
-            }
+            // if (existingReview) {
+            //     return res.status(400).json({
+            //         msg: "You have already reviewed this product",
+            //     })
+            // }
             const reviews = new ProductReview({ buyerId, email, fullName, productId, rating, review });
             await reviews.save();
             // find the product associeated with the review by product id
@@ -22,7 +21,7 @@ productReviewRouter.post('/api/product-review', async (req, res) => {
             // if product is not found return a 404 status
             if (!product) {
                 return res.status(404).json({
-                    error: "Product not found",
+                    msg: "Product not found",
                 });
             }
             // if product is found, update the reviews array with the new review and increment the review count by 1
@@ -30,7 +29,11 @@ productReviewRouter.post('/api/product-review', async (req, res) => {
             product.avgRating = (product.avgRating * (product.totalRating - 1) + rating) / product.totalRating;
             await product.save();
 
-            return res.status(201).send(reviews);
+            return res.status(201).json({
+  msg: "Review uploaded successfully",
+  review: reviews,
+  product: product
+});
         }
     } catch (e) {
         res.status(500).json({
@@ -45,7 +48,7 @@ productReviewRouter.get('/api/reviews', async (req, res) => {
         res.status(200).json({ reviews });
     } catch (e) {
         res.status(500).json({
-            error: e.message,
+            msg: e.message,
         });
     }
 })

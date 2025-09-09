@@ -21,7 +21,7 @@ productRouter.get('/api/populer-products', async (req, res)=> {
         const product = await Product.find({populer: true});
         if(!product || product.length === 0){
             return res.status(404).json({
-                error: "No popular products found",
+                msg: "No popular products found",
             });
         }else {
             return res.status(200).send(product);
@@ -38,7 +38,7 @@ productRouter.get('/api/recommended-products', async (req, res)=> {
         const product = await Product.find({recommended: true});
         if(!product || product.length === 0){
             return res.status(404).json({
-                error: "No recommended products found",
+                msg: "No recommended products found",
             });
         }else {
             return res.status(200).send(product);

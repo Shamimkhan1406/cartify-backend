@@ -14,7 +14,7 @@ const vendorSchema = mongoose.Schema({
                 const result = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 return result.test(value);
             },
-            message:"Please enter a valid email address",
+            msg:"Please enter a valid email address",
         },
     },
     state:{
@@ -41,7 +41,7 @@ const vendorSchema = mongoose.Schema({
             validator:(value)=>{
                 return value.length >= 8;
             },
-            message:"Password must be at least 8 characters long",
+            msg:"Password must be at least 8 characters long",
         }
     },
 },);
