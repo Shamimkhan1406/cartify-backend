@@ -12,7 +12,7 @@ const auth = async (req, res, next) => {
         // if no token is found, return a 401 status with a message
         if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
         // verify the token using the secret key
-        const verifyed = jwt.verifyed(token, 'passwordKey');
+        const verifyed = jwt.verify(token, 'passwordKey');
         // if the token is invalid, return a 401 status with a message
         if (!verifyed) return res.status(401).json({ msg: 'Token verification failed, authorization denied' });
         // find the user or vendor by id from the token
@@ -30,4 +30,23 @@ const auth = async (req, res, next) => {
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
-}
+};
+
+// vendor authentication middleware
+// this middleware will verify the token sent in the request headers and check if the vendor exists in the database
+// it should be used for routes that are specific to vendors
+const vendorAuth = async (req, res, next) => {
+    try {
+        // check if the user is a vendor
+        if (req.user.role || req.user.role !== 'vendor'){
+            // if the user is not a vendor, return a 401 status with a message
+            return res.status(401).json({ msg: 'Authorization denied, vendor access only' });
+        }
+        // if the user is a vendor, call the next middleware or route handler
+        next();
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+};
+
+module.exports = { auth, vendorAuth };
