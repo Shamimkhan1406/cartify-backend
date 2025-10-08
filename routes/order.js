@@ -1,9 +1,10 @@
 const express = require('express');
 const orderRouter = express.Router();
 const Order = require('../models/order');
+const { auth, vendorAuth } = require("../middleware/auth");
 
 // post route for creating a new order
-orderRouter.post('/api/orders', async (req, res) => {
+orderRouter.post('/api/orders', auth, async (req, res) => {
     try {
         const { productId, fullName, email, state, city, locality, productName, productPrice, quantity, category, image, buyerId, vendorId, } = req.body;
         const createdAt = Date.now(); // get the current timestamp
@@ -14,7 +15,10 @@ orderRouter.post('/api/orders', async (req, res) => {
         // save the order to the database
         await order.save();
         // send a success response
-        return res.status(201).json(order);
+        return res.status(201).json({
+            msg: "Order placed successfully",
+            order: order,
+        });
     } catch (e) {
         // handle any errors that occur during the process
         res.status(500).json({
@@ -24,7 +28,7 @@ orderRouter.post('/api/orders', async (req, res) => {
 });
 
 // get route for retrieving all orders by buyerId
-orderRouter.get('/api/orders/:buyerId', async (req, res) => {
+orderRouter.get('/api/orders/:buyerId', auth, async (req, res) => {
     try {
         // extract buyerId from the request parameters
         const { buyerId } = req.params;
@@ -46,14 +50,14 @@ orderRouter.get('/api/orders/:buyerId', async (req, res) => {
     }
 });
 // delete route for deleting a specific order by id
-orderRouter.delete('/api/orders/:id', async (req, res)=> {
+orderRouter.delete('/api/orders/:id', auth, async (req, res) => {
     try {
         // extract the id from req parameter
-        const {id} = req.params;
+        const { id } = req.params;
         // find the order by _id and delete it
         const deletedOrder = await Order.findByIdAndDelete(id);
         // check if the order was found and deleted
-        if (!deletedOrder){
+        if (!deletedOrder) {
             return res.status(404).json({
                 msg: "Order not found",
             });
@@ -71,7 +75,7 @@ orderRouter.delete('/api/orders/:id', async (req, res)=> {
     }
 })
 // get route for retrieving all orders by VendorId
-orderRouter.get('/api/orders/vendors/:vendorId', async (req, res) => {
+orderRouter.get('/api/orders/vendors/:vendorId', auth, vendorAuth, async (req, res) => {
     try {
         // extract vendorId from the request parameters
         const { vendorId } = req.params;
