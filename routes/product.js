@@ -1,13 +1,14 @@
 const express = require('express');
 const Product = require('../models/product');
 const productRouter = express.Router();
-const {auth,vendorAuth} = require("../middleware/auth");
+const { auth, vendorAuth } = require("../middleware/auth");
+const subCategory = require('../models/sub_category');
 
 // Create a new product
-productRouter.post('/api/add-product',auth,vendorAuth, async (req, res)=> {
+productRouter.post('/api/add-product', auth, vendorAuth, async (req, res) => {
     try {
-        const {productName, productPrice, quantity, description, images, category, vendorId, fullName, subCategory} = req.body;
-        const product = new Product({productName, productPrice, quantity, description, images, category, vendorId, fullName, subCategory});
+        const { productName, productPrice, quantity, description, images, category, vendorId, fullName, subCategory } = req.body;
+        const product = new Product({ productName, productPrice, quantity, description, images, category, vendorId, fullName, subCategory });
         await product.save();
         return res.status(201).send(product);
     } catch (e) {
@@ -17,14 +18,14 @@ productRouter.post('/api/add-product',auth,vendorAuth, async (req, res)=> {
     }
 });
 
-productRouter.get('/api/populer-products', async (req, res)=> {
+productRouter.get('/api/populer-products', async (req, res) => {
     try {
-        const product = await Product.find({populer: true});
-        if(!product || product.length === 0){
+        const product = await Product.find({ populer: true });
+        if (!product || product.length === 0) {
             return res.status(404).json({
                 msg: "No popular products found",
             });
-        }else {
+        } else {
             return res.status(200).send(product);
         }
     } catch (e) {
@@ -34,14 +35,14 @@ productRouter.get('/api/populer-products', async (req, res)=> {
     }
 });
 
-productRouter.get('/api/recommended-products', async (req, res)=> {
+productRouter.get('/api/recommended-products', async (req, res) => {
     try {
-        const product = await Product.find({recommended: true});
-        if(!product || product.length === 0){
+        const product = await Product.find({ recommended: true });
+        if (!product || product.length === 0) {
             return res.status(404).json({
                 msg: "No recommended products found",
             });
-        }else {
+        } else {
             return res.status(200).send(product);
         }
     } catch (e) {
@@ -51,18 +52,51 @@ productRouter.get('/api/recommended-products', async (req, res)=> {
     }
 });
 // retrieve populer product by category
-productRouter.get('/api/products-by-category/:category', async (req, res)=>{
+productRouter.get('/api/products-by-category/:category', async (req, res) => {
     try {
-        const {category} = req.params;
-        const products = await Product.find({category, populer: true});
-        if (!products || products.length === 0){
+        const { category } = req.params;
+        const products = await Product.find({ category, populer: true });
+        if (!products || products.length === 0) {
             return res.status(404).json({
                 msg: "No products found for this category",
-            
+
             });
         }
-        else{
+        else {
             return res.status(200).json(products);
+        }
+    } catch (e) {
+        res.status(500).json({
+            error: e.message,
+        });
+    }
+});
+
+// new route for retriving products by subcategory
+productRouter.get('/api/products-by-subcategory/:productId', async (req, res) => {
+    try {
+        const { productId } = req.params;
+        // first find the product to find its subcategory
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({
+                msg: "Product not found",
+            });
+        }
+        else {
+            // find related product based on subcategory of the product\
+            const relatedProduct = await Product.find({ 
+                subCategory: product.subCategory, 
+                _id: { $ne: productId }, // exclude the current product
+            },)
+            if (!relatedProduct || relatedProduct.length === 0) {
+                return res.status(404).json({
+                    msg: "No related products found",
+                });
+            }
+            else {
+                return res.status(200).json(relatedProduct);
+            }
         }
     } catch (e) {
         res.status(500).json({
