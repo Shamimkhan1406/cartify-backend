@@ -109,7 +109,7 @@ productRouter.get('/api/products-by-subcategory/:productId', async (req, res) =>
 productRouter.get('/api/top-rated-products', async (req, res)=> {
     try {
         // fetch all products then sort them by avg rating in descending order 
-        const topRatedProduct = await Product.find().sort({ avgRating: -1 }).limit(10); //  -1 for descending order
+        const topRatedProduct = await Product.find().sort({ avgRating: -1 }).limit(5); //  -1 for descending order
         // check if no products are found
         if (!topRatedProduct || topRatedProduct.length === 0) {
             return res.status(404).json({
@@ -118,6 +118,27 @@ productRouter.get('/api/top-rated-products', async (req, res)=> {
         }
         else {
             return res.status(200).json(topRatedProduct);
+        }
+    } catch (e) {
+        res.status(500).json({
+            error: e.message,
+        });
+    }
+})
+
+// fetch all product by subcategory
+
+productRouter.get('/api/producs-by-subcategory/:subCategory', async (req, res)=>{
+    try {
+        const { subCategory } = req.params;
+        const products = await Product.find({subCategory: subCategory});
+        if (!products || products.length === 0){
+            return res.status(404).json({
+                msg: "No products found for this subcategory",
+            });
+        }
+        else {
+            return res.status(200).json(products);
         }
     } catch (e) {
         res.status(500).json({
