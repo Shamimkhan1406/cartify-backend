@@ -147,4 +147,40 @@ productRouter.get('/api/producs-by-subcategory/:subCategory', async (req, res)=>
     }
 })
 
+// routes for searching product by name or description
+productRouter.get('/api/search-products', async (req,res)=>{
+    try {
+        // extract the query parameter from the request query string
+        const {query} = req.query;
+        // validate the query parameter
+        // if missing return 400 status
+        if (!query){
+            return res.status(400).json({
+                msg: "Missing search query",
+            });
+        }
+        // search for the product collection for documents where product name or description contains the query string
+        const products = await Product.find({
+            $or: [
+                // regex will match any product containing the query string, case insensitive
+                // for example if the query is "phone" it will match "Phone", "smartphone", "headphone" etc
+                { productName: { $regex: query, $options: 'i' } },
+                { description: { $regex: query, $options: 'i' } },
+            ]
+        })
+        if (!products || products.length === 0){
+            return res.status(404).json({
+                msg: "No products found matching your query",
+            });
+        }
+        else {
+            return res.status(200).json(products);
+        }
+    } catch (e) {
+        res.status(500).json({
+            error: e.message,
+        });
+    }
+})
+
 module.exports = productRouter;
