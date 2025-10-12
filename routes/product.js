@@ -37,7 +37,7 @@ productRouter.get('/api/populer-products', async (req, res) => {
 
 productRouter.get('/api/recommended-products', async (req, res) => {
     try {
-        const product = await Product.find({ recommended: true });
+        const product = await Product.find({ recommend: true });
         if (!product || product.length === 0) {
             return res.status(404).json({
                 msg: "No recommended products found",
@@ -166,6 +166,8 @@ productRouter.get('/api/search-products', async (req,res)=>{
                 // for example if the query is "phone" it will match "Phone", "smartphone", "headphone" etc
                 { productName: { $regex: query, $options: 'i' } },
                 { description: { $regex: query, $options: 'i' } },
+                { category: { $regex: query, $options: 'i' } },
+                { subCategory: { $regex: query, $options: 'i' } },
             ]
         })
         if (!products || products.length === 0){
