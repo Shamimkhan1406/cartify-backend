@@ -6,9 +6,10 @@ require ("dotenv").config();
 const stripe = require('stripe')(process.env.stripe_key);
 const { auth, vendorAuth } = require("../middleware/auth");
 const { status } = require('express/lib/response');
+const { default: Stripe } = require('stripe');
 
 //simplified payment intent api
-orderRouter.post('/api/payment-intent',auth, async (req, res)=>{
+orderRouter.post('/api/payment-intent', auth, async (req, res)=>{
     try {
         const { amount, currency} = req.body;
         const paymentIntent = await stripe.paymentIntents.create({
@@ -16,7 +17,7 @@ orderRouter.post('/api/payment-intent',auth, async (req, res)=>{
             currency,
             
         });
-        res.status(200).json({paymentIntent});
+        return res.status(200).json(paymentIntent);
     } catch (e) {
         res.status(500).json({
             error: e.message,
@@ -68,6 +69,18 @@ orderRouter.post('/api/payment-intent',auth, async (req, res)=>{
 //         });
 //     }
 // })
+
+// retireve the payment intent by its ID
+orderRouter.get('/api/payment-intent/:id', auth, async (req, res)=>{
+    try {
+        const paymentIntent = await stripe.paymentIntents.retrieve(req.params.id);
+        res.status(200).json(paymentIntent);
+    } catch (e) {
+        res.status(500).json({
+            error: e.message,
+        });
+    }
+})
 
 // post route for creating a new order
 orderRouter.post('/api/orders', auth, async (req, res) => {
