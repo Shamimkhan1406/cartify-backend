@@ -8,7 +8,7 @@ const { auth, vendorAuth } = require("../middleware/auth");
 const { status } = require('express/lib/response');
 
 //simplified payment intent api
-orderRouter.post('/api/payment-intent', async (req, res)=>{
+orderRouter.post('/api/payment-intent',auth, async (req, res)=>{
     try {
         const { amount, currency} = req.body;
         const paymentIntent = await stripe.paymentIntents.create({
