@@ -2,20 +2,18 @@ const express = require('express');
 const orderRouter = express.Router();
 const Order = require('../models/order');
 // import the dotenv module to load environment variables
-require ("dotenv").config();
+require("dotenv").config();
 const stripe = require('stripe')(process.env.stripe_key);
 const { auth, vendorAuth } = require("../middleware/auth");
-const { status } = require('express/lib/response');
-const { default: Stripe } = require('stripe');
 
 //simplified payment intent api
-orderRouter.post('/api/payment-intent', auth, async (req, res)=>{
+orderRouter.post('/api/payment-intent', auth, async (req, res) => {
     try {
-        const { amount, currency} = req.body;
+        const { amount, currency } = req.body;
         const paymentIntent = await stripe.paymentIntents.create({
             amount,
             currency,
-            
+
         });
         return res.status(200).json(paymentIntent);
     } catch (e) {
@@ -61,7 +59,7 @@ orderRouter.post('/api/payment-intent', auth, async (req, res)=>{
 //             paymentIntentId: paymentIntent.id,
 //             amount: paymentIntent.amount / 100, // convert back to the main currency unit
 //             currency: paymentIntent.currency,
-            
+
 //         })
 //     } catch (e) {
 //         res.status(500).json({
@@ -71,7 +69,7 @@ orderRouter.post('/api/payment-intent', auth, async (req, res)=>{
 // })
 
 // retireve the payment intent by its ID
-orderRouter.get('/api/payment-intent/:id', auth, async (req, res)=>{
+orderRouter.get('/api/payment-intent/:id', auth, async (req, res) => {
     try {
         const paymentIntent = await stripe.paymentIntents.retrieve(req.params.id);
         res.status(200).json(paymentIntent);
@@ -85,11 +83,11 @@ orderRouter.get('/api/payment-intent/:id', auth, async (req, res)=>{
 // post route for creating a new order
 orderRouter.post('/api/orders', auth, async (req, res) => {
     try {
-        const { productId, fullName, email, state, city, locality, productName, productPrice, quantity, category, image, buyerId, vendorId, } = req.body;
+        const { productId, fullName, email, state, city, locality, productName, productPrice, quantity, category, image, buyerId, vendorId,paymentStatus, paymentIntentId, paymentMethod} = req.body;
         const createdAt = Date.now(); // get the current timestamp
         // create a new order instance with the extracted data
         const order = new Order(
-            { productId, fullName, email, state, city, locality, productName, productPrice, quantity, category, image, buyerId, vendorId, createdAt }
+            { productId, fullName, email, state, city, locality, productName, productPrice, quantity, category, image, buyerId, vendorId, createdAt, paymentStatus, paymentIntentId, paymentMethod }
         );
         // save the order to the database
         await order.save();
