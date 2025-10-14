@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../models/users");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const sendWelcomeEmail = require("../helper/send_email");
 
 const authRouter = express.Router();
 
@@ -28,6 +29,12 @@ authRouter.post("/api/signup", async (req, res) => {
             });
             user = await user.save();
             res.json({ user });
+            // send welcome email
+            sendWelcomeEmail(email).catch(emailError => {
+                // This will now log the rejection to your backend console, 
+                // which might contain the specific AWS error code.
+                console.error("Failed to send welcome email (check IAM/Sandbox!):", emailError.message);
+            });
         }
     } catch (e) {
         res.status(500).json({
@@ -81,8 +88,8 @@ authRouter.put("/api/users/:id", async (req, res) => {
         // setting new option to true returns the updated document
         // if the user is not found, it will return null
         const updatedUser = await User.findByIdAndUpdate(
-            id, 
-            { state, city, locality }, 
+            id,
+            { state, city, locality },
             { new: true }
         );
         // if the user is not found, return a 404 status code
