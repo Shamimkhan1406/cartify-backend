@@ -182,13 +182,13 @@ authRouter.get("/api/users", async (req, res) => {
 });
 
 // delete user or vendor api
-authRouter.delete("/api/users/:id", auth, async (req, res) => {
+authRouter.delete("/api/delete-users/:id", auth, async (req, res) => {
     try {
         // extract the id parameter from the request url
-        const { id } = req.params;
+        const {id} = req.params;
         // check if a reguler user or a vendor exists with the given id in database
-        const user = await User.findById(_id); /// mongodb matches 'id' with '_id'
-        const vendor = await Vendor.findById(_id);
+        const user = await User.findById(id); /// mongodb matches 'id' with '_id'
+        const vendor = await Vendor.findById(id);
         // we can check either (user || vendor) or (user && vendor)
         if (!user && !vendor) {
             return res.status(404).json({
