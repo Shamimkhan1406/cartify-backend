@@ -7,9 +7,9 @@ const jwt = require("jsonwebtoken");
 // signup api point
 
 
-vendorRouter.post("/api/vendor/signup", async (req,res)=>{
+vendorRouter.post("/api/v2/vendor/signup", async (req,res)=>{
     try {
-        const {email,fullName,password} = req.body;
+        const {email,fullName,storeName,storeImage,storeDescription,password} = req.body;
         const existingEmail = await Vendor.findOne({email});
         if(existingEmail){
             return res.status(400).json({
@@ -25,6 +25,9 @@ vendorRouter.post("/api/vendor/signup", async (req,res)=>{
             let vendor = new Vendor({
                 email,
                 fullName,
+                storeName,
+                storeImage,
+                storeDescription,
                 password:hashPassword
             });
             vendor = await vendor.save();
@@ -37,7 +40,7 @@ vendorRouter.post("/api/vendor/signup", async (req,res)=>{
     }
 });
 // signin api point
-vendorRouter.post("/api/vendor/signin", async (req,res)=>{
+vendorRouter.post("/api/v2/vendor/signin", async (req,res)=>{
     try {
         const {email,password} = req.body;
         const findUser = await Vendor.findOne({email});
