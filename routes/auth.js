@@ -15,6 +15,14 @@ const optStore = new Map();
 authRouter.post("/api/signup", async (req, res) => {
     try {
         const { email, fullName, password } = req.body;
+        // check if the email already in Vendor collection
+        const existingVendorEmail = await Vendor.findOne({ email });
+        if (existingVendorEmail) {
+            return res.status(400).json({
+                msg: "A vendor with this email already exists"
+            });
+        }
+        // check if the email already in user collection
         const existingEmail = await User.findOne({ email });
         if (existingEmail) {
             return res.status(400).json({

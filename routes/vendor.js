@@ -1,5 +1,6 @@
 const express = require('express');
 const Vendor = require('../models/vendor');
+const User = require('../models/users');
 const vendorRouter = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -10,6 +11,13 @@ const jwt = require("jsonwebtoken");
 vendorRouter.post("/api/v2/vendor/signup", async (req,res)=>{
     try {
         const {email,fullName,storeName,storeImage,storeDescription,password} = req.body;
+        // check if the email already in user collection
+        const existingUserEmail = await User.findOne({email});
+        if(existingUserEmail){
+            return res.status(400).json({
+                msg:"A user with this email already exists"
+            });
+        }
         const existingEmail = await Vendor.findOne({email});
         if(existingEmail){
             return res.status(400).json({
