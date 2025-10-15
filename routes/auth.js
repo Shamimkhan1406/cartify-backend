@@ -1,9 +1,11 @@
 const express = require("express");
 const User = require("../models/users");
+const Vendor = require("../models/vendor");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sendOtpEmail = require("../helper/send_email");
 const crypto = require("crypto");
+const { auth } = require("../middleware/auth");
 
 const authRouter = express.Router();
 
@@ -27,7 +29,7 @@ authRouter.post("/api/signup", async (req, res) => {
             // generate otp
             const otp = crypto.randomInt(100000, 999999).toString();
             // store otp with email in map
-            optStore.set(email, {otp, expiresAt: Date.now() + 10 * 60 * 1000}); // otp valid for 10 minutes
+            optStore.set(email, { otp, expiresAt: Date.now() + 10 * 60 * 1000 }); // otp valid for 10 minutes
             // create a new user
             let user = new User({
                 email,
@@ -44,7 +46,7 @@ authRouter.post("/api/signup", async (req, res) => {
                 emailResponse,
             });
             //res.json({ user });
-            
+
         }
     } catch (e) {
         res.status(500).json({
@@ -53,7 +55,7 @@ authRouter.post("/api/signup", async (req, res) => {
     }
 });
 // verify otp api point
-authRouter.post("/api/verify-otp", async (req, res)=> {
+authRouter.post("/api/verify-otp", async (req, res) => {
     try {
         const { email, otp } = req.body;
         const storedOtp = optStore.get(email);
@@ -177,6 +179,39 @@ authRouter.get("/api/users", async (req, res) => {
             error: e.message,
         });
     }
-})
+});
+
+// delete user or vendor api
+authRouter.delete("/api/users/:id", auth, async (req, res) => {
+    try {
+        // extract the id parameter from the request url
+        const { id } = req.params;
+        // check if a reguler user or a vendor exists with the given id in database
+        const user = await User.findById(_id); /// mongodb matches 'id' with '_id'
+        const vendor = await Vendor.findById(_id);
+        // we can check either (user || vendor) or (user && vendor)
+        if (!user && !vendor) {
+            return res.status(404).json({
+                msg: "User not found"
+            });
+
+        }
+        // delete the user or vendor
+        if (user) {
+            await User.findByIdAndDelete(id);
+        }
+        else if (vendor) {
+            await Vendor.findByIdAndDelete(id);
+        }
+        return res.status(200).json({
+            msg: "User deleted successfully"
+        });
+
+    } catch (e) {
+        res.status(500).json({
+            error: e.message,
+        });
+    }
+});
 
 module.exports = authRouter;
