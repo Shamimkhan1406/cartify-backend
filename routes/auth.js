@@ -52,6 +52,50 @@ authRouter.post("/api/signup", async (req, res) => {
         });
     }
 });
+// verify otp api point
+authRouter.post("/api/verify-otp", async (req, res)=> {
+    try {
+        const { email, otp } = req.body;
+        const storedOtp = optStore.get(email);
+        if (!storedOtp) {
+            return res.status(400).json({
+                msg: "No OTP found or OTP has expired",
+            });
+        }
+        if (storedOtp.otp !== parseInt(otp)) {
+            return res.status(400).json({
+                msg: "Invalid OTP",
+            });
+        }
+        if (storedOtp.expiresAt < Date.now()) {
+            optStore.delete(email);
+            return res.status(400).json({
+                msg: "OTP has expired",
+            });
+        }
+        // mark user as verified
+        const user = await User.findOneAndUpdate(
+            { email },
+            { isVerified: true },
+            { new: true }
+        );
+        if (!user) {
+            return res.status(404).json({
+                msg: "User not found",
+            });
+        };
+        optStore.delete(email);
+        // send welcome email
+        return res.status(200).json({
+            msg: "Email verified successfully",
+            user,
+        });
+    } catch (e) {
+        res.status(500).json({
+            error: e.message,
+        });
+    }
+});
 // signin api point
 authRouter.post("/api/signin", async (req, res) => {
     try {
