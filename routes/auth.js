@@ -2,9 +2,12 @@ const express = require("express");
 const User = require("../models/users");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const sendWelcomeEmail = require("../helper/send_email");
+const sendOtpEmail = require("../helper/send_email");
+const crypto = require("crypto");
 
 const authRouter = express.Router();
+
+const optStore = new Map();
 
 // signup api point
 authRouter.post("/api/signup", async (req, res) => {
@@ -21,20 +24,27 @@ authRouter.post("/api/signup", async (req, res) => {
             const salt = await bcrypt.genSalt(10);
             // hash the password using the salt
             const hashPassword = await bcrypt.hash(password, salt);
+            // generate otp
+            const otp = crypto.randomInt(100000, 999999);
+            // store otp with email in map
+            optStore.set(email, {otp, expiresAt: Date.now() + 10 * 60 * 1000}); // otp valid for 10 minutes
             // create a new user
             let user = new User({
                 email,
                 fullName,
-                password: hashPassword
+                password: hashPassword,
+                isVerified: false,
             });
             user = await user.save();
-            res.json({ user });
-            // send welcome email
-            sendWelcomeEmail(email).catch(emailError => {
-                // This will now log the rejection to your backend console, 
-                // which might contain the specific AWS error code.
-                console.error("Failed to send welcome email (check IAM/Sandbox!):", emailError.message);
+            // send otp email
+            emailResponse = await sendOtpEmail(email, otp);
+
+            res.status(201).json({
+                msg: "User created successfully, otp sent to email",
+                emailResponse,
             });
+            //res.json({ user });
+            
         }
     } catch (e) {
         res.status(500).json({

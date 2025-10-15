@@ -13,18 +13,28 @@ const client = new SESClient({
 
 // function to generate imple HTML content for the welcome email
 
-const generateWelcomeEmailHtml =()=>{
+const generateOtpEmailHtml =(otp)=>{
     return `
     <html>
         <body>
             <h1>Welcome to ${process.env.app_name}!</h1>
+            <p>Thank you for signing up. We're excited to have you on board!</p>
+            <p> your otp is: </p>
+            <h2 style="color:blue;">${otp}</h2>
+            <p> this otp is valid for 10 minutes only. </p>
+            <p>Feel free to explore our app and let us know if you have any questions.</p>
+            <p>Best regards,<br/>The ${process.env.app_name} Team</p>
+            <hr/>
+            <p> if this wasn't you, please ignore this email. </p>
+            <p>Thanks,<br/>The ${process.env.app_name} Team</p>
+
         </body>
     </html>
     `
 };
 
 // function to send a welcome email to provided email address
-const sendWelcomeEmail = async (email) => {
+const sendOtpEmail = async (email,otp) => {
     // define the email parameters for the ses sendEmail command
     const params = {
         Source: process.env.email_from, // sender email address
@@ -36,12 +46,12 @@ const sendWelcomeEmail = async (email) => {
             Body: {
                 Html: {
                     Charset: "UTF-8", // ensure the email body is encoded in UTF-8 character encoding
-                    Data: generateWelcomeEmailHtml(), // generate the HTML content for the email body from the helper function
+                    Data: generateOtpEmailHtml(otp), // generate the HTML content for the email body from the helper function
                 },
             },
             Subject: {
                 Charset: "UTF-8", // ensure the email subject is encoded in UTF-8 character encoding
-                Data: `Welcome to ${process.env.app_name}!`, // subject line for the email
+                Data: `Cartify Email Verification `, // subject line for the email
             }
         }
     };
@@ -57,4 +67,4 @@ const sendWelcomeEmail = async (email) => {
     }
 };
 // export the sendWelcomeEmail function for use in other modules
-module.exports = sendWelcomeEmail;
+module.exports = sendOtpEmail;
