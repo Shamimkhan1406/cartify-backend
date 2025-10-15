@@ -25,7 +25,7 @@ authRouter.post("/api/signup", async (req, res) => {
             // hash the password using the salt
             const hashPassword = await bcrypt.hash(password, salt);
             // generate otp
-            const otp = crypto.randomInt(100000, 999999);
+            const otp = crypto.randomInt(100000, 999999).toString();
             // store otp with email in map
             optStore.set(email, {otp, expiresAt: Date.now() + 10 * 60 * 1000}); // otp valid for 10 minutes
             // create a new user
@@ -62,7 +62,7 @@ authRouter.post("/api/verify-otp", async (req, res)=> {
                 msg: "No OTP found or OTP has expired",
             });
         }
-        if (storedOtp.otp !== parseInt(otp)) {
+        if (storedOtp.otp !== otp) {
             return res.status(400).json({
                 msg: "Invalid OTP",
             });
