@@ -62,6 +62,11 @@ authRouter.post("/api/signin", async (req, res) => {
                 msg: "User does not exist"
             });
         }
+        if (!findUser.isVerified) {
+            return res.status(403).json({
+                msg: "User is not verified. Please verify your email first."
+            });
+        }
         else {
             const isMatch = await bcrypt.compare(password, findUser.password);
             if (!isMatch) {
