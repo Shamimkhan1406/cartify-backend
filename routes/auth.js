@@ -160,9 +160,21 @@ authRouter.post("/api/tokenIsValid", async (req, res) =>{
         if (!user) return res.json(false);
         return res.json(true);
     } catch (e) {
-        res.json(false);
+        res.status(500).json({ error: e.message });
     }
-} )
+});
+
+// define a get route for fetching the logged in user's data
+authRouter.get("/", auth, async (req, res) => {
+    try {
+        // retrieve the user from the id from authenticated user
+        const user = await User.findById(req.user);
+    // send the user data as json response including the user document field and token
+        return res.json({ ...user._doc, token: req.token });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+})
 
 // put route for updating user's state, city and locality
 authRouter.put("/api/users/:id", async (req, res) => {
