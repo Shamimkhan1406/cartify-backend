@@ -149,6 +149,21 @@ authRouter.post("/api/signin", async (req, res) => {
     }
 });
 
+// check token validity api
+authRouter.post("/api/tokenIsValid", async (req, res) =>{
+    try {
+        const token = req.header('x-auth-token');
+        if (!token) return res.json(false);
+        const verified = jwt.verify(token, 'passwordKey');
+        if (!verified) return res.json(false);
+        const user = await User.findById(verified.id); //|| await Vendor.findById(verified.id);
+        if (!user) return res.json(false);
+        return res.json(true);
+    } catch (e) {
+        res.json(false);
+    }
+} )
+
 // put route for updating user's state, city and locality
 authRouter.put("/api/users/:id", async (req, res) => {
     try {
