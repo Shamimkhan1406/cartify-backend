@@ -132,13 +132,13 @@ authRouter.post("/api/signin", async (req, res) => {
                 // set the token Expiry to 1 minute for testing purpose
                 // in production, set it to 1 month or more
                 // you can also implement refresh token mechanism
-                const token = jwt.sign({ id: findUser._id }, "passwordKey", { expiresIn: "1m" });
+                const token = jwt.sign({ id: findUser._id }, "passwordKey", { expiresIn: "30d" });      ///////////
                 // remove the password from the response
                 const { password, ...userWithoutPassword } = findUser._doc;
                 // sent the response
                 res.json({
                     token,
-                    user: userWithoutPassword
+                    userWithoutPassword
                 });
             }
         }
