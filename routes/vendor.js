@@ -4,6 +4,7 @@ const User = require('../models/users');
 const vendorRouter = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { auth } = require("../middleware/auth");
 
 // signup api point
 
@@ -47,6 +48,32 @@ vendorRouter.post("/api/v2/vendor/signup", async (req,res)=>{
         });
     }
 });
+// check token validity api
+vendorRouter.post("/api/vendor/tokenIsValid", async (req, res) =>{
+    try {
+        const token = req.header('x-auth-token');
+        if (!token) return res.json(false);
+        const verified = jwt.verify(token, 'passwordKey');
+        if (!verified) return res.json(false);
+        const vendor = await Vendor.findById(verified.id); //|| await Vendor.findById(verified.id);
+        if (!vendor) return res.json(false);
+        return res.json(true);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+// define a get route for fetching the logged in user's data
+vendorRouter.get("/get-vendor", auth, async (req, res) => {
+    try {
+        // retrieve the vendor from the id from authenticated vendor
+        const vendor = await Vendor.findById(req.user);
+    // send the vendor data as json response including the vendor document field and token
+        return res.json({ ...vendor._doc, token: req.token });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 // signin api point
 vendorRouter.post("/api/v2/vendor/signin", async (req,res)=>{
     try {
@@ -65,7 +92,7 @@ vendorRouter.post("/api/v2/vendor/signin", async (req,res)=>{
                 });
             }
             else{
-                const token = jwt.sign({id:findUser._id},"passwordKey");
+                const token = jwt.sign({id:findUser._id},"passwordKey",{expiresIn:"1m"});
                 // remove the password from the response
                 const {password, ...vendorWithoutPassword} = findUser._doc;
                 // sent the response
