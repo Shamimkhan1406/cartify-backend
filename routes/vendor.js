@@ -98,7 +98,7 @@ vendorRouter.post("/api/v2/vendor/signin", async (req,res)=>{
                 // sent the response
                 res.json({
                     token,
-                    vendor: vendorWithoutPassword
+                    vendorWithoutPassword
                 });
             }
         }

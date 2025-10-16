@@ -19,15 +19,18 @@ const vendorSchema = mongoose.Schema({
     },
     storeName:{
         type: String,
-        required: true,
+        default: "",
+        //required: true,
     },
     storeImage:{
         type: String,
-        required: true,
+        default: "",
+        //required: true,
     },
     storeDescription:{
         type: String,
-        required: true,
+        default: "",
+        //required: true,
     },
     state:{
         type: String,
