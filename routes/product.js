@@ -213,6 +213,34 @@ productRouter.get('/api/edit-product/:productId', auth, vendorAuth, async (req, 
             error: e.message,
         });
     }
+});
+
+// fetch product by vendor id
+productRouter.get('/api/products/:vendorId', auth, vendorAuth, async (req, res)=>{
+    try {
+        const {vendorId} = req.params;
+        // valid the vendor exist
+        const vendorExists = await Vendor.findById(vendorId);
+        if (!vendorExists){
+            return res.status(404).json({
+                msg: "Vendor not found",
+            });
+        }
+        // fetch all products by vendor id
+        const products = await Product.find({vendorId: vendorId});
+        if (!products || products.length === 0){
+            return res.status(404).json({
+                msg: "No products found for this vendor",
+            });
+        }
+        else {
+            return res.status(200).json(products);
+        }
+    } catch (e) {
+        res.status(500).json({
+            error: e.message,
+        });
+    }
 })
 
 module.exports = productRouter;
