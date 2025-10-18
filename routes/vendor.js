@@ -92,7 +92,7 @@ vendorRouter.post("/api/v2/vendor/signin", async (req,res)=>{
                 });
             }
             else{
-                const token = jwt.sign({id:findUser._id},"passwordKey",{expiresIn:"1m"});
+                const token = jwt.sign({id:findUser._id},"passwordKey",{expiresIn:"30d"});
                 // remove the password from the response
                 const {password, ...vendorWithoutPassword} = findUser._doc;
                 // sent the response

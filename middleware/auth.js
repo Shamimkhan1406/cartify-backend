@@ -38,7 +38,7 @@ const auth = async (req, res, next) => {
 const vendorAuth = async (req, res, next) => {
     try {
         // check if the user is a vendor
-        if (req.user.role || req.user.role !== 'vendor'){
+        if (!req.user.role || req.user.role !== 'vendor'){
             // if the user is not a vendor, return a 401 status with a message
             return res.status(401).json({ msg: 'Authorization denied, vendor access only' });
         }
