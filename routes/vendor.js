@@ -119,6 +119,34 @@ vendorRouter.get('/api/vendors', async (req, res) => {
             error: e.message,
         })
     }
-})
+});
+
+// put route for updating user's state, city and locality
+vendorRouter.put("/api/vendor/:id", async (req, res) => {
+    try {
+        // extract the id parameter from the request url
+        const { id } = req.params;
+        const { storeImage, storeDescription } = req.body;
+        
+        const updatedUser = await Vendor.findByIdAndUpdate(
+            id,
+            { storeImage, storeDescription },
+            { new: true }
+        );
+        // if the user is not found, return a 404 status code
+        if (!updatedUser) {
+            return res.status(404).json({
+                msg: "Vendor not found"
+            });
+        }
+        // return the updated user
+        return res.status(200).json(updatedUser);
+    } catch (e) {
+        // handle any errors that occur during the process
+        res.status(500).json({
+            error: e.message,
+        });
+    }
+},);
 
 module.exports = vendorRouter;
