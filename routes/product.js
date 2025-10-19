@@ -216,7 +216,7 @@ productRouter.put('/api/edit-product/:productId', auth, vendorAuth, async (req, 
 });
 
 // fetch product by vendor id
-productRouter.get('/api/products/:vendorId', auth, vendorAuth, async (req, res)=>{
+productRouter.get('/api/products/:vendorId', async (req, res)=>{
     try {
         const {vendorId} = req.params;
         // valid the vendor exist
